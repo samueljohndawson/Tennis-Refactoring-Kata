@@ -20,53 +20,35 @@ TennisGame1.prototype.getPlayers = function () {
 
 TennisGame1.prototype.wonPoint = function (playerName) {
 
-
     if (playerName === "player1") {
         this.player1.score += 1;
     } else {
         this.player2.score += 1
     }
 
-
-
-
 };
 
 TennisGame1.prototype.getScore = function () {
-    var score = "";
-    var tempScore = 0;
+    let score = "";
     let [player1, player2] = this.getPlayers();
+    let pointDifference = player1.score - player2.score
 
-    if (player1.score === player2.score) {
-        score = convertDrawsToTennisLingo(player1);
-    } else if (player1.score >= 4 || player2.score >= 4) {
-        var minusResult = player1.score - player2.score;
-        if (minusResult === 1) score = "Advantage player1";
-        else if (minusResult === -1) score = "Advantage player2";
-        else if (minusResult >= 2) score = "Win for player1";
-        else score = "Win for player2";
-    } else {
-        for (var i = 1; i < 3; i++) {
-            if (i === 1) tempScore = player1.score;
-            else {
-                score += "-";
-                tempScore = player2.score;
-            }
-            switch (tempScore) {
-                case 0:
-                    score += "Love";
-                    break;
-                case 1:
-                    score += "Fifteen";
-                    break;
-                case 2:
-                    score += "Thirty";
-                    break;
-                case 3:
-                    score += "Forty";
-                    break;
-            }
-        }
+
+
+    if (pointDifference == 0) {
+        score = convertDrawsToTennisLingo(player1.score);
+
+    }
+    else if (isAdvantage(player1.score, player2.score, pointDifference)) {
+        score = calculateAdvantage(pointDifference);
+    }
+    else if (isOver(player1.score, player2.score, pointDifference)) {
+        score = calculateWinner(pointDifference)
+    }
+    else {
+        score += convertPointsToTennisLingo(player1.score)
+        score += "-"
+        score += convertPointsToTennisLingo(player2.score)
     }
     return score;
 };
@@ -75,8 +57,54 @@ if (typeof window === "undefined") {
     module.exports = TennisGame1;
 }
 
-function convertDrawsToTennisLingo(player1) {
-    switch (player1.score) {
+function isAdvantage(player1score, player2score, pointDifference) {
+    return ((player1score >= 4 || player2score >= 4) && (Math.abs(pointDifference) < 2))
+}
+
+function convertPointsToTennisLingo(points) {
+    switch (points) {
+        case 0:
+            return "Love";
+        case 1:
+            return "Fifteen";
+        case 2:
+            return "Thirty";
+        case 3:
+            return "Forty";
+    }
+}
+
+function calculateAdvantage(pointDifference) {
+    switch (true) {
+        case pointDifference === 1:
+            score = "Advantage player1";
+            break;
+        case pointDifference === -1:
+            score = "Advantage player2";
+            break;
+    }
+    return score
+}
+
+function isOver(player1score, player2score, pointDifference) {
+    return ((Math.abs(pointDifference) >= 2) && (player1score >= 4 || player2score >= 4))
+}
+
+function calculateWinner(pointDifference) {
+    switch (true) {
+        case pointDifference >= 2:
+            score = "Win for player1";
+            break;
+        case pointDifference <= 2:
+            score = "Win for player2";
+            break;
+    }
+    return score
+
+}
+
+function convertDrawsToTennisLingo(numberOfPoints) {
+    switch (numberOfPoints) {
         case 0:
             score = "Love-All";
             break;
