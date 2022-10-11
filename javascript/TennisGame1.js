@@ -9,44 +9,48 @@ var TennisGame1 = function (player1Name, player2Name) {
 
 };
 
+TennisGame1.prototype.getPlayers = function () {
+
+    let player1 = this.player1
+    let player2 = this.player2
+    let players = [player1, player2]
+    return players;
+}
+
+
 TennisGame1.prototype.wonPoint = function (playerName) {
-    if (playerName === "player1")
+
+
+    if (playerName === "player1") {
         this.player1.score += 1;
-    else
-        this.player2.score += 1;
+    } else {
+        this.player2.score += 1
+    }
+
+
+
 
 };
 
 TennisGame1.prototype.getScore = function () {
     var score = "";
     var tempScore = 0;
-    if (this.player1.score === this.player2.score) {
-        switch (this.player1.score) {
-            case 0:
-                score = "Love-All";
-                break;
-            case 1:
-                score = "Fifteen-All";
-                break;
-            case 2:
-                score = "Thirty-All";
-                break;
-            default:
-                score = "Deuce";
-                break;
-        }
-    } else if (this.player1.score >= 4 || this.player2.score >= 4) {
-        var minusResult = this.player1.score - this.player2.score;
+    let [player1, player2] = this.getPlayers();
+
+    if (player1.score === player2.score) {
+        score = convertDrawsToTennisLingo(player1);
+    } else if (player1.score >= 4 || player2.score >= 4) {
+        var minusResult = player1.score - player2.score;
         if (minusResult === 1) score = "Advantage player1";
         else if (minusResult === -1) score = "Advantage player2";
         else if (minusResult >= 2) score = "Win for player1";
         else score = "Win for player2";
     } else {
         for (var i = 1; i < 3; i++) {
-            if (i === 1) tempScore = this.player1.score;
+            if (i === 1) tempScore = player1.score;
             else {
                 score += "-";
-                tempScore = this.player2.score;
+                tempScore = player2.score;
             }
             switch (tempScore) {
                 case 0:
@@ -69,4 +73,22 @@ TennisGame1.prototype.getScore = function () {
 
 if (typeof window === "undefined") {
     module.exports = TennisGame1;
+}
+
+function convertDrawsToTennisLingo(player1) {
+    switch (player1.score) {
+        case 0:
+            score = "Love-All";
+            break;
+        case 1:
+            score = "Fifteen-All";
+            break;
+        case 2:
+            score = "Thirty-All";
+            break;
+        default:
+            score = "Deuce";
+            break;
+    }
+    return score;
 }
